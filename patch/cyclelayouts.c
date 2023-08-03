@@ -1,10 +1,18 @@
 void
 cyclelayout(const Arg *arg)
 {
-	int i;
-	int num_layouts = LENGTH(layouts);
-
-	for (i = 0; i < num_layouts && &layouts[i] != selmon->lt[selmon->sellt]; i++);
-	i += arg->i;
-	setlayout(&((Arg) { .v = &layouts[(i % num_layouts + num_layouts) % num_layouts] })); // modulo
+	Layout *l;
+	for (l = (Layout *)layouts; l != selmon->lt[selmon->sellt]; l++);
+	if (arg->i > 0) {
+		if (l->symbol && (l + 1)->symbol)
+			setlayout(&((Arg) { .v = (l + 1) }));
+		else
+			setlayout(&((Arg) { .v = layouts }));
+	} else {
+		if (l != layouts && (l - 1)->symbol)
+			setlayout(&((Arg) { .v = (l - 1) }));
+		else
+			setlayout(&((Arg) { .v = &layouts[LENGTH(layouts) - 2] }));
+	}
 }
+
